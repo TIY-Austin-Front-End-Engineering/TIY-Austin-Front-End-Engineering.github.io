@@ -9,18 +9,14 @@ var quizQuery = new Parse.Query(QuizModel);
 var questionsQuery = new Parse.Query(QuestionModel);
 var studentAnswersQuery = new Parse.Query(StudentAnswersModel);
 var PossibleAnswersComponent = require('./components/PossibleAnswersComponent');
-var numQuestions = 0;
-var numCorrect = 0;
-
 
 module.exports = React.createClass({
 	getInitialState: function() {
 		return {
 			user: this.props.user,
-			quiz: null,
+			quizzes: null,
 			questions: [],
 			error: null
-		
 		}
 	},
 	componentWillMount: function() {
@@ -29,7 +25,7 @@ module.exports = React.createClass({
 		.first({
 			success: (result) => {
 				this.setState({
-					quiz: result
+					quizzes: result
 				});
 			},
 			error: (error) => {
@@ -61,40 +57,25 @@ module.exports = React.createClass({
 		//var questions maps out the questions associated with the quizId
 		var questions = this.state.questions
 		.map(function(question) {
-			this.setState({
-
-			})
-			return (
-				<div>
-					<h2>{question.get('questionTitle')}</h2>
-					<h3>{question.get('questionContent')}</h3>
-					<PossibleAnswersComponent question={question} answers={question.get('questionChoices')} correctAnswer={question.get('correctChoice')} quizId={this.state.quiz.id}/>
-				</div>
-				);
+		return (
+			<div>
+				<h2>{question.get('questionTitle')}</h2>
+				<PossibleAnswersComponent question={question.id} answers={question.get('questionChoices')} correctAnswer={question.get('correctChoice')} quizId={this.state.quiz}/>
+			</div>
+			);
 		})
 		return (
 			<div>
 				<div>
-					<div>Quiz Name: {this.state.quiz.get('quizTitle')}</div>
-					<div>User: {Parse.User.current('username')}</div>
-					<div>Percentage: {this.percent}%</div>
+					<div>Quiz Name: </div>
+					<div>User: </div>
+					<div>Percentage: </div>
 				</div>
 				<div>
 					{questions}
 				</div>
 			</div>
 		);
-	},
-	percent: function(){
-		//correct answers devided by num questions
-		studentAnswersQuery.equalTo('quiz_id', this.state.quiz)
-		.equalTo('studentCorrect', true).then({
-			success: function (results){
-				numCorrect=results.length()
-			}
-		})
-		numQuestions=this.state.questions.length();
-		return Math.round(numCorrect/numQuestions*100)
 	}
 	
 });

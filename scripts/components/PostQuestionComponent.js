@@ -7,61 +7,58 @@ module.exports = React.createClass({
 	//created a blank array for multiple choice answers to be added into
 	getInitialState: function(){
 		return (
-			{
-				choices: [],
-				errorElement: null
-			}
-
+			{choices: []}
 		);
 	},
 	render: function() {
-		console.log('render '+ this.state.errorElement)
 	//once a new multiple choice answer is added in, choiceRows will map and display onto the page
 		var choiceRows = this.state.choices.map(function(choice){
 			return(
 				<label>
-				<input className="radioo" type="radio" value={choice} name="choices"/>
-				{choice}
+				<input type="radio" value={choice}/>
+				{newChoice}
 				</label>
 			)
 		});
 		return (
 	//the html to display on the post question page
-			<div>
-				<input type="text" ref="questionTitle" className="validate" placeholder="Question" />
-				<input type="text" ref="choice" className="validate" placeholder="Answer"/>
+			<form>
+				<input type="text" ref="questionTitle" className="validate" />
+				<input type="text" ref="choice" className="validate" />
 
 				<button onClick={this.onAddChoice}> Add Choice </button>
-					<div ref="choiceRows">				
 					{choiceRows}
-					</div>
-					{this.state.errorElement}
+					{errorElement}
+				<input type="text" ref="questionAnswer" className="validate" />
 				<button onClick={this.onSubmit}>Submit Question</button>
-			</div>
+			</form>
 
 		);
 	},
-	onSubmit: function() {
+	onSubmit: function(e){
 	//selecting the correct answer from the multiple choice array
-		var radioBtns = this.refs.choiceRows.querySelectorAll('.radioo');
+		e.preventDefault();
 		var correctAnswer = null;
-		for(var i = 0; i < radioBtns.length; i++) {
-			var correct = radioBtns[i];
+		var errorElement = null;
+		for(var i = 0; i < currentChoices.length; i++) {
+			var correct = currentChoices[i];
 			if(correct.checked) {
 				correctAnswer = correct.value;
 			}
 		}
-		//once question is filled out, send to the server
-		if(correctAnswer === null){
-			this.setState({errorElement: 'this is an error'});
-		}else{
-			var newQuestion = new QuestionModel({
-				questionContent: this.refs.questionTitle.value,
-				questionChoices: this.state.choices,
-				correctChoice: correctAnswer
-			});
-			newQuestion.save();
+		if(correctAnswer = null){
+			errorElement = (
+				<p className="red">Please select a correct answer</p>
+			);
 		}
+	//once question is filled out, send to the server
+		var newQuestion = new QuestionModel({
+			questionContent: this.refs.questionTitle.value,
+			questionChoices: choices,
+			correctChoice: correctAnswer
+		});
+
+		newQuestion.save();
 
 	},
 	onAddChoice: function(){
