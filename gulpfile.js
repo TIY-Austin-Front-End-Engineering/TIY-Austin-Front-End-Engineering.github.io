@@ -114,11 +114,13 @@ gulp.task('copy', ['clean'], function() {
 });
 
 gulp.task('js', ['copy'], function() {
+	console.log('js!!!!!!!!!');
 	var argv = validateCli();
 
-	var p = browserify('scripts/main.js', { debug: true })
+	var p = browserify({ entries: ['./scripts/main.js'], debug: true })
 	.transform(babelify)
 	.bundle()
+	.on('error', gutil.log.bind(gutil, 'Browserify Error'))
 	.pipe(source('bundle.js'))
 	.pipe(buffer())
 	.on('error', function (err) { console.log('Error : ' + err.message); });
