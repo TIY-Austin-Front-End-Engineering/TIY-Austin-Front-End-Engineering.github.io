@@ -12,10 +12,11 @@ var NavigationComponent = require('./components/NavigationComponent');
 var LoginComponent = require('./components/LoginComponent');
 var QuizListComponent = require('./components/QuizListComponent');
 var PostQuestionComponent = require('./components/PostQuestionComponent');
+var AttendanceComponent = require('./components/AttendanceComponent');
 var QuizResultsComponent = require('./components/QuizResultsComponent');
 var HomeComponent = require('./components/HomeComponent');
+var ClassAnalyticsComponent = require('./components/ClassAnalyticsComponent');
 var DashboardComponent = require('./components/DashboardComponent');
-
 
 var currentUser = Parse.User.current();
 var app = document.getElementById('app');
@@ -28,20 +29,18 @@ var Router = Backbone.Router.extend({
 		'register': 'register',
 		'quizList': 'quizList',
 		'postQuestion': 'postQuestion',
-		'dashboard': 'dashboard',
+		'quizResults/:id': 'quizResults',
+		'logout': 'logout',
+		'classAnalytics': 'classAnalytics',
 		'quizResults/:userId/:quizId': 'quizResults',
-		'logout': 'logout'
+		'quizDetails/:id':'quizDetailsPage',
+		'attendance': 'attendance'
+	},
+	quizDetailsPage: function(id){
+		ReactDOM.render(<QuizDetailsComponent quizId={id}  quizIsFinished={quizFinished}/>, app);
 	},
 	home: function() {
 		ReactDOM.render(<HomeComponent />, app);
-	},
-	dashboard: function() {
-		// if(currentUser && currentUser.get('teacher') === true) {
-		// 	ReactDOM.render(<DashboardComponent router={r} />, app);
-		// }
-		// else {
-		// 	this.navigate('', {trigger: true});
-		// }
 	},
 	login: function() {
 		ReactDOM.render(<LoginComponent router={r} />, app);
@@ -64,10 +63,27 @@ var Router = Backbone.Router.extend({
 		Parse.User.logOut();
 		this.navigate('', {trigger: true});
 	},
+	attendance: function() {
+		console.log(currentUser.get('teacher'), currentUser.id);
+		if(currentUser.get('teacher')) {
+		ReactDOM.render(<AttendanceComponent/>, app);
+	} else {
+		ReactDOM.render(<h1>Access Denied, Contact Administrator</h1>, app);
+	}
+	},
 	quizList: function() {
 		ReactDOM.render(<QuizListComponent />, app);
 	},
+	classAnalytics: function() {
+		ReactDOM.render(<ClassAnalyticsComponent />, app);
+	},
 	dashboard: function() {
+		// if(currentUser && currentUser.get('teacher') === true) {
+		// 	ReactDOM.render(<DashboardComponent router={r} />, app);
+		// }
+		// else {
+		// 	this.navigate('', {trigger: true});
+		// }
 		ReactDOM.render(<DashboardComponent />, app);
 	}
 });
